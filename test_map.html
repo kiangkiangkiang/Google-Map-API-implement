@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style type="text/css">
+		html,
+		body,
+		#map-canvas {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	<script type="text/javascript"
+		src="">
+		</script>
+	<script type="text/javascript">
+		function initialize() {
+			var markers = [];
+			var markers2 = [];
+			var infoWindows = [];
+			var infowindows_myhouse = [];
+			var center = {
+				center: { lat: 25.1421424, lng: 121.5027905 },
+				zoom: 13
+			};
+			var map = new google.maps.Map(
+				document.getElementById('map-canvas'),
+				center);
+
+			var geocoder = new google.maps.Geocoder();
+			console.log(geocoder);
+			var info_house = [
+				'<h2>我家</h2>' +
+				'<span>這是我家喔！</span><br/>' +
+				'<img class="infoImg" src="https://pic.hfcdn.com/res/DrawImage/ShowPic/600/450/YCBUD01/Out/%7BD8BBA709-03B5-4219-B8E8-9DFC5BB2501F%7D/20061127153214.jpg?t=635935558624030000"><br/>' +
+				'<i>(圖片取自google)</i><br/>' +
+				'<i>商家數 : 12</i><br/>' +
+				'<i>政治作戰學院 : 15分鐘</i><br/>' +
+				'<i>北投捷運站 : 18分鐘</i><br/>' +
+				'<i>陽明山花鐘 : 32分鐘</i><br/>'
+			];
+			var info_firm = [
+				'<h2>捷運站</h2>' +
+				'<span>北投捷運站</span><br/>' +
+				'<img class="infoImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/East_Side_of_Beitou_Station_Exit.jpg/300px-East_Side_of_Beitou_Station_Exit.jpg"><br/>' +
+				'<i>(圖片取自google)</i>',
+				'<h2>政治作戰學院</h2>' +
+				'<span>政治作戰學院</span><br/>' +
+				'<img class="infoImg" src="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2018/11/01/realtime/5474372.jpg&x=0&y=0&sw=0&sh=0&exp=3600"><br/>' +
+				'<i>(圖片取自google)</i>',
+				'<h2>花鐘</h2>' +
+				'<span>陽明山_花鐘</span><br/>' +
+				'<img class="infoImg" src="http://www.caneis.com.tw/link/info/europ_info/swiss/images/Geneva-004-1.jpg"><br/>' +
+				'<i>(圖片取自google)</i>'
+			];
+			//var pos_hou = new google.maps.LatLng(25.1421424, 121.5027905)		
+
+			var marker_house = [{
+				position: { lat: 25.1434819, lng: 121.5046532 },
+				map: map,
+				title: '我家'
+			}
+			];
+
+
+			var marker_firm = [{
+				position: { lat: 25.1336626, lng: 121.4959186 },
+				map: map,
+				title: '捷運站'
+			}, {
+				position: { lat: 25.1402924, lng: 121.4972158 },
+				map: map,
+				title: '政治作戰大學'
+			}, {
+				position: { lat: 25.1590191, lng: 121.536818 },
+				map: map,
+				title: '花鐘'
+			}
+			];
+
+				
+			setPath(map)	  
+			
+			info_house.forEach(function (e, i) {
+				infowindows_myhouse[i] = new google.maps.InfoWindow({
+					content: e
+				});
+			});
+			info_firm.forEach(function (e, i) {
+				infoWindows[i] = new google.maps.InfoWindow({
+					content: e
+				});
+			});
+
+			//標出 marker
+			marker_house.forEach(function (e, i) {
+				markers[i] = new google.maps.Marker(e);
+				markers[i].setMap(map);
+				markers[i].addListener('click', function () {
+					infowindows_myhouse[i].open(map, markers[i]);
+				});
+
+			});
+
+			marker_firm.forEach(function (e, i) {
+				markers2[i] = new google.maps.Marker(e);
+				markers2[i].setMap(map);				
+				markers2[i].addListener('click', function () {
+					infoWindows[i].open(map, markers2[i]);
+					calcRoute(marker_house[0].position.lat,marker_house[0].position.lng,e.position.lat,e.position.lng)
+				});
+			});
+
+			function _geocoder(address) {
+				geocoder.geocode({
+					address: address
+				}, function (results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						LatLng = results[0].geometry.location;
+						return results;
+					}
+				});
+			}
+		}
+
+		function calcRoute(st1,st2,en1,en2) {
+			
+			var request = {
+				origin: {lat:st1, lng:st2},
+				destination: {lat: en1 ,lng: en2},				
+				travelMode: 'DRIVING'
+			};
+			directionsService.route(request, function (response, status) {
+				if (status == 'OK') {
+					console.log(response.routes[0].legs[0].steps);
+					directionsDisplay.setDirections(response);
+				}
+				else {
+					console.log(status);
+				}
+			});
+		}
+		function setPath(map) {
+			directionsService = new google.maps.DirectionsService();
+			//規畫路徑呈現選項
+			var rendererOptions = {
+				suppressMarkers: true,
+			};
+			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+			directionsDisplay.setMap(map);
+		}
+		google.maps.event.addDomListener(
+			window, 'load', initialize);
+
+		//目前問題 1.可以顯示兩點導航 無法到多點? 4/26  2.有路線沒有時間 這是為毛
+	</script>
+</head>
+
+<body>
+	<div id="map-canvas"></div>
+</body>
+
+</html>
