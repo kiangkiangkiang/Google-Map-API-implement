@@ -6,6 +6,8 @@ GOOGLE : https://developers.google.com/maps/documentation/directions/intro?hl=zh
 
 各種路線規劃 : https://developers.google.com/maps/documentation/javascript/examples/directions-panel
 
+多點導航範例(看起來比較沒用):https://codepen.io/2ha/pen/baobbR
+
 MYSQL和PHP 連結google map : https://developers.google.com/maps/documentation/javascript/mysql-to-maps
 
 繪出圖形https://www.oxxostudio.tw/articles/201802/google-maps-12-rect-circle.html
