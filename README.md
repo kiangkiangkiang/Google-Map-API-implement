@@ -8,4 +8,4 @@ GOOGLE : https://developers.google.com/maps/documentation/directions/intro?hl=zh
 
 MYSQL和PHP 連結google map : https://developers.google.com/maps/documentation/javascript/mysql-to-maps
 
- 
+繪出圖形https://www.oxxostudio.tw/articles/201802/google-maps-12-rect-circle.html
