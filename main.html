@@ -36,7 +36,7 @@
 	</div>
 	<div id="map-canvas"></div>
 	<script type="text/javascript"
-		src="">
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM">
 		</script>
 	<script type="text/javascript">
 		function initialize() {
@@ -46,8 +46,10 @@
 			var infowindows_myhouse = [];
 			var center = {
 				center: { lat: 25.1421424, lng: 121.5027905 },
-				zoom: 13
+				zoom: 16
 			};
+			var circle_distance = [30, 20, 60];
+			var circle = [];
 			var map = new google.maps.Map(
 				document.getElementById('map-canvas'),
 				center);
@@ -123,7 +125,16 @@
 					calcRoute(marker_house[0].position.lat, marker_house[0].position.lng, e.position.lat, e.position.lng)
 				});
 			});
-
+			marker_firm.forEach(function (e, i) {
+				circle[i] = new google.maps.Circle({
+			      center: e.position,
+			      radius: circle_distance[i] * 10,
+			      strokeOpacity: 0,
+			      fillColor: '#f00',
+			      fillOpacity: 0.35,
+			      map: map
+		    	});
+		    })
 			//標出 marker
 			marker_house.forEach(function (e, i) {
 				markers[i] = new google.maps.Marker(e);
@@ -273,6 +284,7 @@
 		//目前問題1.可以顯示兩點導航 無法到多點? 4/26  2.有路線沒有時間 這是為毛
 		//testchange
 		//testchange
+		
 	</script>
 
 </body>
