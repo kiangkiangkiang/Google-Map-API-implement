@@ -16,3 +16,5 @@ MYSQL和PHP 連結google map : https://developers.google.com/maps/documentation/
 
 
 找附近地點:nearby search
+
+placeAPI找尋附近店家等等各式功能與收費表:https://developers.google.com/places/web-service/usage-and-billing

@@ -44,18 +44,14 @@
 			var markers2 = [];
 			var infoWindows = [];
 			var infowindows_myhouse = [];
-			var center = {
-				center: { lat: 25.1421424, lng: 121.5027905 },
-				zoom: 16
-			};
-			var circle_distance = [30, 20, 60];//圓形大小
+			var center = {center: { lat: 25.1421424, lng: 121.5027905 },zoom: 16};
+			var circle_distance = [300, 500, 600];//圓形半徑，單位為公尺
 			var circle = [];
 			var map = new google.maps.Map(
 				document.getElementById('map-canvas'),
 				center);
-
+			//令map的ip為'map-canvas'，以及定義map的center
 			var geocoder = new google.maps.Geocoder();
-			console.log(geocoder);
 			var info_house = [
 				'<h2>我家</h2>' +
 				'<span>這是我家喔！</span><br/>' +
@@ -71,10 +67,12 @@
 				'<span>北投捷運站</span><br/>' +
 				'<img class="infoImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/East_Side_of_Beitou_Station_Exit.jpg/300px-East_Side_of_Beitou_Station_Exit.jpg"><br/>' +
 				'<i>(圖片取自google)</i>',
+
 				'<h2>政治作戰學院</h2>' +
 				'<span>政治作戰學院</span><br/>' +
 				'<img class="infoImg" src="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2018/11/01/realtime/5474372.jpg&x=0&y=0&sw=0&sh=0&exp=3600"><br/>' +
 				'<i>(圖片取自google)</i>',
+
 				'<h2>花鐘</h2>' +
 				'<span>陽明山_花鐘</span><br/>' +
 				'<img class="infoImg" src="http://www.caneis.com.tw/link/info/europ_info/swiss/images/Geneva-004-1.jpg"><br/>' +
@@ -86,9 +84,7 @@
 				position: { lat: 25.1434819, lng: 121.5046532 },
 				map: map,
 				title: '我家'
-			}
-			];
-
+			}];
 
 			var marker_firm = [{
 				position: { lat: 25.1336626, lng: 121.4959186 },
@@ -101,16 +97,17 @@
 			}, {
 				position: { lat: 25.1590191, lng: 121.536818 },
 				map: map,
-				title: '花鐘'
-			}
-			];
+				title: '花鐘'}];
+
 			setPath(map)
+			//使用setPath function，要先setpath才能用calcRoute
 
 			info_house.forEach(function (e, i) {
 				infowindows_myhouse[i] = new google.maps.InfoWindow({
 					content: e
 				});
 			});
+
 			info_firm.forEach(function (e, i) {
 				infoWindows[i] = new google.maps.InfoWindow({
 					content: e
@@ -124,45 +121,39 @@
 					infoWindows[i].open(map, markers2[i]);
 					calcRoute(marker_house[0].position.lat, marker_house[0].position.lng, e.position.lat, e.position.lng)
 				});
-			});
-			marker_firm.forEach(function (e, i) {
+				//標示公司地點、資料、路線規劃
+
 				circle[i] = new google.maps.Circle({
-			      center: e.position,
-			      radius: circle_distance[i] * 10,
+			      center: {lat:e.position.lat,lng:e.position.lng},
+			      radius: circle_distance[i],
 			      strokeOpacity: 0,
 			      fillColor: '#f00',
 			      fillOpacity: 0.35,
 			      map: map
 		    	});
-		    })
-			//標出 marker
+		    	//圈出一個範圍
+			});
+			
 			marker_house.forEach(function (e, i) {
 				markers[i] = new google.maps.Marker(e);
 				markers[i].setMap(map);
-				markers[i].addListener('click', function () {
-					//alert(e);				
+				markers[i].addListener('click', function () {			
 					infowindows_myhouse[i].open(map, markers[i]);
 					//為了傳參數給多路線導航 刻意把起始點和終點的location求出來(給OandD_array)
 					var OandD_array = function (dest_locat) {
-						//alert("start success");
 						var dlist = [];
 						var olist = [];
 						dest_locat.forEach(function (element, u) {
-							//alert("for loop start success");
 							dlist[u] = { lat: element.position.lat, lng: element.position.lng };
 							olist[u] = { lat: e.position.lat, lng: e.position.lng };
-							//alert("for loop end success");
-							//alert(dlist[u][lat]+'  '+dlist[u][lng]);
 						})
 						return [olist, dlist];
 					};
-					//alert(marker_firm+'  <- this is markerfirm');
 					var result = OandD_array(marker_firm);
-					//alert(result[1][1].lat+"   <- 0");
 					mutipleRoute(result[0], result[1]);
 				});
 
-			});//這裡應該沒問題了
+			});
 
 
 			function _geocoder(address) {
@@ -275,6 +266,7 @@
 			};
 			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 			directionsDisplay.setMap(map);
+			//資料放到地圖上
 		}
 
 
