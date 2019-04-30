@@ -36,7 +36,7 @@
 	</div>
 	<div id="map-canvas"></div>
 	<script type="text/javascript"
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-Fa">
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM">
 		</script>
 	<script type="text/javascript">
 		function initialize() {
@@ -44,13 +44,13 @@
 			var markers2 = [];
 			var infoWindows = [];
 			var infowindows_myhouse = [];
-			var center = {center: { lat: 25.1421424, lng: 121.5027905 },zoom: 16};
+			var center = {center: { lat: 25.1421424, lng: 121.5027905 },zoom: 13.5};
 			var circle_distance = [300, 500, 600];//圓形半徑，單位為公尺
 			var circle = [];
-			var map = new google.maps.Map(
-				document.getElementById('map-canvas'),
+			var map = new google.maps.Map(document.getElementById('map-canvas'),
 				center);
-			//令map的ip為'map-canvas'，以及定義map的center
+			//找到html中的map-canvas，以及定義map的center
+
 			var geocoder = new google.maps.Geocoder();
 			var info_house = [
 				'<h2>我家</h2>' +
@@ -99,20 +99,23 @@
 				map: map,
 				title: '花鐘'}];
 
-			setPath(map)
-			//使用setPath function，要先setpath才能用calcRoute
 
 			info_house.forEach(function (e, i) {
 				infowindows_myhouse[i] = new google.maps.InfoWindow({
 					content: e
 				});
 			});
+			//將房屋資訊以google infowindow的形式存入infowindows_myhouse
 
 			info_firm.forEach(function (e, i) {
 				infoWindows[i] = new google.maps.InfoWindow({
 					content: e
 				});
 			});
+			//將公司資訊以google infowindow的形式存入infowindows_myhouse
+
+			setPath(map)
+			//使用setPath function，要先setpath才能用calcRoute
 
 			marker_firm.forEach(function (e, i) {
 				markers2[i] = new google.maps.Marker(e);
@@ -149,6 +152,7 @@
 						})
 						return [olist, dlist];
 					};
+					//設置一個array
 					var result = OandD_array(marker_firm);
 					mutipleRoute(result[0], result[1]);
 				});
@@ -162,7 +166,9 @@
 				}, function (results, status) {
 					if (status == google.maps.GeocoderStatus.OK) {
 						LatLng = results[0].geometry.location;
+						//alert(status);
 						return results;
+
 					}
 				});
 			}
@@ -184,7 +190,8 @@
 				unitSystem: google.maps.UnitSystem.METRIC,
 				avoidHighways: false,
 				avoidTolls: false
-			};
+			};//租屋點連向各工作點的方法
+
 			service.getDistanceMatrix(request, function (response, status) {
 				if (status !== 'OK') {
 					alert('Error was: ' + status);
@@ -276,7 +283,6 @@
 		//目前問題1.可以顯示兩點導航 無法到多點? 4/26  2.有路線沒有時間 這是為毛
 		//testchange
 		//testchange
-		
 	</script>
 
 </body>
