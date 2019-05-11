@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <link rel=stylesheet type="text/css" href="initial.css">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM">
+    </script>
+    <script type="text/javascript">
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 25.08,
+                    lng: 121.512
+                },
+                zoom: 11.7,
+                layer: "traffic"
+
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="map">
+        <div id=price class=initial_button>
+            <image src="price_2.png" style="width:100%;height: 100%"></image>
+
+        </div>
+        <div id=traffic class=initial_button>
+            <image src="traffic_n.jpg" style="width:100%;height: 100%"></image>
+
+        </div>
+
+        <div id=work_place class=initial_button>
+            <image src="location_6.png" style="width:100%;height: 100%"></image>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

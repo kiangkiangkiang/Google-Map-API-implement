@@ -2,288 +2,320 @@
 <html>
 
 <head>
-	<style type="text/css">
-		html,
-		body {
-			height: 100%;
-			margin: 0;
-			padding: 0;
-		}
-
-		#map-canvas {
-			height: 100%;
-			width: 70%;
-		}
-
-
-
-		#right-panel {
-			float: right;
-			width: 30%;
-
-		}
-
-		#output {
-			font-size: 16px;
-		}
-	</style>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map-canvas {
+            height: 100%;
+            width: 70%;
+        }
+        
+        #right-panel {
+            float: right;
+            width: 30%;
+        }
+        
+        #output {
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
-	<div id="right-panel">
-		<div id="output"></div>
-		<div id="input"></div>
-	</div>
-	<div id="map-canvas"></div>
-	<script type="text/javascript"
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM">
-		</script>
-	<script type="text/javascript">
-		function initialize() {
-			var markers = [];//租屋點泡泡
-			var markers2 = [];
-			var infoWindows = [];
-			var infowindows_myhouse = [];
-			var center = {center: { lat: 25.1421424, lng: 121.5027905 },zoom: 13.5};
-			var circle_distance = [300, 500, 600];//圓形半徑，單位為公尺
-			var circle = [];
-			var map = new google.maps.Map(document.getElementById('map-canvas'),
-				center);
-			//找到html中的map-canvas，以及定義map的center
+    <div id="right-panel">
+        <div id="output"></div>
+        <div id="input"></div>
+    </div>
+    <div id="map-canvas"></div>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM&callback=initialize">
+    </script>
+    <script type="text/javascript">
+        function initialize() {
+            var markers = []; //租屋點泡泡
+            var markers2 = [];
+            var infoWindows = [];
+            var infowindows_myhouse = [];
+            var center = {
+                center: {
+                    lat: 25.1421424,
+                    lng: 121.5027905
+                },
+                zoom: 13.5
+            };
+            var circle_distance = [300, 500, 600]; //圓形半徑，單位為公尺
+            var circle = [];
+            var map = new google.maps.Map(document.getElementById('map-canvas'),
+                center);
+            //找到html中的map-canvas，以及定義map的center
 
-			var geocoder = new google.maps.Geocoder();
-			var info_house = [
-				'<h2>我家</h2>' +
-				'<span>這是我家喔！</span><br/>' +
-				'<img class="infoImg" src="https://pic.hfcdn.com/res/DrawImage/ShowPic/600/450/YCBUD01/Out/%7BD8BBA709-03B5-4219-B8E8-9DFC5BB2501F%7D/20061127153214.jpg?t=635935558624030000"><br/>' +
-				'<i>(圖片取自google)</i><br/>' +
-				'<i>商家數 : 12</i><br/>' +
-				'<i>政治作戰學院 : 15分鐘</i><br/>' +
-				'<i>北投捷運站 : 18分鐘</i><br/>' +
-				'<i>陽明山花鐘 : 32分鐘</i><br/>'
-			];
-			var info_firm = [
-				'<h2>捷運站</h2>' +
-				'<span>北投捷運站</span><br/>' +
-				'<img class="infoImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/East_Side_of_Beitou_Station_Exit.jpg/300px-East_Side_of_Beitou_Station_Exit.jpg"><br/>' +
-				'<i>(圖片取自google)</i>',
+            var geocoder = new google.maps.Geocoder();
+            var info_house = [
+                '<h2>我家</h2>' +
+                '<span>這是我家喔！</span><br/>' +
+                '<img class="infoImg" src="https://pic.hfcdn.com/res/DrawImage/ShowPic/600/450/YCBUD01/Out/%7BD8BBA709-03B5-4219-B8E8-9DFC5BB2501F%7D/20061127153214.jpg?t=635935558624030000"><br/>' +
+                '<i>(圖片取自google)</i><br/>' +
+                '<i>商家數 : 12</i><br/>' +
+                '<i>政治作戰學院 : 15分鐘</i><br/>' +
+                '<i>北投捷運站 : 18分鐘</i><br/>' +
+                '<i>陽明山花鐘 : 32分鐘</i><br/>'
+            ];
+            var info_firm = [
+                '<h2>捷運站</h2>' +
+                '<span>北投捷運站</span><br/>' +
+                '<img class="infoImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/East_Side_of_Beitou_Station_Exit.jpg/300px-East_Side_of_Beitou_Station_Exit.jpg"><br/>' +
+                '<i>(圖片取自google)</i>',
 
-				'<h2>政治作戰學院</h2>' +
-				'<span>政治作戰學院</span><br/>' +
-				'<img class="infoImg" src="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2018/11/01/realtime/5474372.jpg&x=0&y=0&sw=0&sh=0&exp=3600"><br/>' +
-				'<i>(圖片取自google)</i>',
+                '<h2>政治作戰學院</h2>' +
+                '<span>政治作戰學院</span><br/>' +
+                '<img class="infoImg" src="https://pgw.udn.com.tw/gw/photo.php?u=https://uc.udn.com.tw/photo/2018/11/01/realtime/5474372.jpg&x=0&y=0&sw=0&sh=0&exp=3600"><br/>' +
+                '<i>(圖片取自google)</i>',
 
-				'<h2>花鐘</h2>' +
-				'<span>陽明山_花鐘</span><br/>' +
-				'<img class="infoImg" src="http://www.caneis.com.tw/link/info/europ_info/swiss/images/Geneva-004-1.jpg"><br/>' +
-				'<i>(圖片取自google)</i>'
-			];
-			//var pos_hou = new google.maps.LatLng(25.1421424, 121.5027905)		
+                '<h2>花鐘</h2>' +
+                '<span>陽明山_花鐘</span><br/>' +
+                '<img class="infoImg" src="http://www.caneis.com.tw/link/info/europ_info/swiss/images/Geneva-004-1.jpg"><br/>' +
+                '<i>(圖片取自google)</i>'
+            ];
+            //var pos_hou = new google.maps.LatLng(25.1421424, 121.5027905)		
 
-			var marker_house = [{
-				position: { lat: 25.1434819, lng: 121.5046532 },
-				map: map,
-				title: '我家'
-			}];
+            var marker_house = [{
+                position: {
+                    lat: 25.1434819,
+                    lng: 121.5046532
+                },
+                map: map,
+                title: '我家'
+            }];
 
-			var marker_firm = [{
-				position: { lat: 25.1336626, lng: 121.4959186 },
-				map: map,
-				title: '捷運站'
-			}, {
-				position: { lat: 25.1402924, lng: 121.4972158 },
-				map: map,
-				title: '政治作戰大學'
-			}, {
-				position: { lat: 25.1590191, lng: 121.536818 },
-				map: map,
-				title: '花鐘'}];
-
-
-			info_house.forEach(function (e, i) {
-				infowindows_myhouse[i] = new google.maps.InfoWindow({
-					content: e
-				});
-			});
-			//將房屋資訊以google infowindow的形式存入infowindows_myhouse
-
-			info_firm.forEach(function (e, i) {
-				infoWindows[i] = new google.maps.InfoWindow({
-					content: e
-				});
-			});
-			//將公司資訊以google infowindow的形式存入infowindows_myhouse
-
-			setPath(map)
-			//使用setPath function，要先setpath才能用calcRoute
-
-			marker_firm.forEach(function (e, i) {
-				markers2[i] = new google.maps.Marker(e);
-				markers2[i].setMap(map);
-				markers2[i].addListener('click', function () {
-					infoWindows[i].open(map, markers2[i]);
-					calcRoute(marker_house[0].position.lat, marker_house[0].position.lng, e.position.lat, e.position.lng)
-				});
-				//標示公司地點、資料、路線規劃
-
-				circle[i] = new google.maps.Circle({
-			      center: {lat:e.position.lat,lng:e.position.lng},
-			      radius: circle_distance[i],
-			      strokeOpacity: 0,
-			      fillColor: '#f00',
-			      fillOpacity: 0.35,
-			      map: map
-		    	});
-		    	//圈出一個範圍
-			});
-			
-			marker_house.forEach(function (e, i) {
-				markers[i] = new google.maps.Marker(e);
-				markers[i].setMap(map);
-				markers[i].addListener('click', function () {			
-					infowindows_myhouse[i].open(map, markers[i]);
-					//為了傳參數給多路線導航 刻意把起始點和終點的location求出來(給OandD_array)
-					var OandD_array = function (dest_locat) {
-						var dlist = [];
-						var olist = [];
-						dest_locat.forEach(function (element, u) {
-							dlist[u] = { lat: element.position.lat, lng: element.position.lng };
-							olist[u] = { lat: e.position.lat, lng: e.position.lng };
-						})
-						return [olist, dlist];
-					};
-					//設置一個array
-					var result = OandD_array(marker_firm);
-					mutipleRoute(result[0], result[1]);
-				});
-
-			});
+            var marker_firm = [{
+                position: {
+                    lat: 25.1336626,
+                    lng: 121.4959186
+                },
+                map: map,
+                title: '捷運站'
+            }, {
+                position: {
+                    lat: 25.1402924,
+                    lng: 121.4972158
+                },
+                map: map,
+                title: '政治作戰大學'
+            }, {
+                position: {
+                    lat: 25.1590191,
+                    lng: 121.536818
+                },
+                map: map,
+                title: '花鐘'
+            }];
 
 
-			function _geocoder(address) {
-				geocoder.geocode({
-					address: address
-				}, function (results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						LatLng = results[0].geometry.location;
-						//alert(status);
-						return results;
+            info_house.forEach(function(e, i) {
+                infowindows_myhouse[i] = new google.maps.InfoWindow({
+                    content: e
+                });
+            });
+            //將房屋資訊以google infowindow的形式存入infowindows_myhouse
 
-					}
-				});
-			}
-		}
-		function mutipleRoute(originArray, destArray) {
-			var service = new google.maps.DistanceMatrixService;
-			/*var map = currentmap;
-			var markersArray = [];
-			var bounds = new google.maps.LatLngBounds;
-			var geocoder = currentgeocoder;
-			var destinationIcon = 'https://chart.googleapis.com/chart?' +
-				'chst=d_map_pin_letter&chld=D|FF0000|000000';
-			var originIcon = 'https://chart.googleapis.com/chart?' +
-				'chst=d_map_pin_letter&chld=O|FFFF00|000000';*/
-			var request = {
-				origins: originArray,
-				destinations: destArray,
-				travelMode: 'DRIVING',
-				unitSystem: google.maps.UnitSystem.METRIC,
-				avoidHighways: false,
-				avoidTolls: false
-			};//租屋點連向各工作點的方法
+            info_firm.forEach(function(e, i) {
+                infoWindows[i] = new google.maps.InfoWindow({
+                    content: e
+                });
+            });
+            //將公司資訊以google infowindow的形式存入infowindows_myhouse
 
-			service.getDistanceMatrix(request, function (response, status) {
-				if (status !== 'OK') {
-					alert('Error was: ' + status);
-				} else {
-					//alert("in gegtDistanceMatrix else part");
-					var originList = response.originAddresses;
-					var destinationList = response.destinationAddresses;
-					//alert("originlist = " + originList);
-					var outputDiv = document.getElementById('output');
-					outputDiv.innerHTML = '';
-					//deleteMarkers(markersArray);
-					/*var showGeocodedAddressOnMap = function (asDestination) {
-						var icon = asDestination ? destinationIcon : originIcon;
-						//asDestination = T 回傳 ?後面前面的值 F的畫就是後面的值
-						return function (results, status) {
-							if (status === google.maps.GeocoderStatus.OK) {
-								map.fitBounds(bounds.extend(results[0].geometry.location));
-								markersArray.push(new google.maps.Marker({
-									map: map,
-									position: results[0].geometry.location,
-									icon: icon
-								}));
-							} else {
-								alert('Geocode was not successful due to: ' + status);
-							}
-						};
-					};*/
-					for (var i = 0; i < originList.length; i++) {
-						var results = response.rows[i].elements;
+            setPath(map)
+                //使用setPath function，要先setpath才能用calcRoute
 
-						/*geocoder.geocode({ 'address': originList[i] },
-							showGeocodedAddressOnMap(false));*/
-						if (i == 0) {
-							for (var j = 0; j < results.length; j++) {
-								/*geocoder.geocode({ 'address': destinationList[j] },
-									showGeocodedAddressOnMap(true));*/
-								outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
-									': ' + results[j].distance.text + ' in ' +
-									results[j].duration.text + '<br>'+'<br>';
-								/*alert("originlist[i] = " + originList[i]);
-								alert("destinationList[j] = " + destinationList[j]);
-								alert("results[j].distance.text = " + results[j].distance.text);
-								alert("results[j].duration.text = " + results[j].duration.text);*/
-							}
-						}
-					}
+            marker_firm.forEach(function(e, i) {
+                markers2[i] = new google.maps.Marker(e);
+                markers2[i].setMap(map);
+                markers2[i].addListener('click', function() {
+                    infoWindows[i].open(map, markers2[i]);
+                    calcRoute(marker_house[0].position.lat, marker_house[0].position.lng, e.position.lat, e.position.lng)
+                });
+                //標示公司地點、資料、路線規劃
 
-				}
-			});
-		}
-		function deleteMarkers(markersArray) {
-			for (var i = 0; i < markersArray.length; i++) {
-				markersArray[i].setMap(null);
-			}
-			markersArray = [];
-		}
+                circle[i] = new google.maps.Circle({
+                    center: {
+                        lat: e.position.lat,
+                        lng: e.position.lng
+                    },
+                    radius: circle_distance[i],
+                    strokeOpacity: 0,
+                    fillColor: '#f00',
+                    fillOpacity: 0.35,
+                    map: map
+                });
+                //圈出一個範圍
+            });
 
-		function calcRoute(st1, st2, en1, en2) {
-			var request = {
-				origin: { lat: st1, lng: st2 },
-				destination: { lat: en1, lng: en2 },
-				travelMode: 'DRIVING'
-			};
-			directionsService.route(request, function (response, status) {
-				if (status == 'OK') {
-					console.log(response.routes[0].legs[0].steps);
-					directionsDisplay.setDirections(response);
-				}
-				else {
-					console.log(status);
-				}
-			});
-		}
-		function setPath(map) {
-			directionsService = new google.maps.DirectionsService();
-			//規畫路徑呈現選項
-			var rendererOptions = {
-				suppressMarkers: true,
-			};
-			directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-			directionsDisplay.setMap(map);
-			//資料放到地圖上
-		}
+            marker_house.forEach(function(e, i) {
+                markers[i] = new google.maps.Marker(e);
+                markers[i].setMap(map);
+                markers[i].addListener('click', function() {
+                    infowindows_myhouse[i].open(map, markers[i]);
+                    //為了傳參數給多路線導航 刻意把起始點和終點的location求出來(給OandD_array)
+                    var OandD_array = function(dest_locat) {
+                        var dlist = [];
+                        var olist = [];
+                        dest_locat.forEach(function(element, u) {
+                            dlist[u] = {
+                                lat: element.position.lat,
+                                lng: element.position.lng
+                            };
+                            olist[u] = {
+                                lat: e.position.lat,
+                                lng: e.position.lng
+                            };
+                        })
+                        return [olist, dlist];
+                    };
+                    //設置一個array
+                    var result = OandD_array(marker_firm);
+                    mutipleRoute(result[0], result[1]);
+                });
+
+            });
 
 
-		google.maps.event.addDomListener(
-			window, 'load', initialize);
+            function _geocoder(address) {
+                geocoder.geocode({
+                    address: address
+                }, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        LatLng = results[0].geometry.location;
+                        //alert(status);
+                        return results;
 
-		//目前問題1.可以顯示兩點導航 無法到多點? 4/26  2.有路線沒有時間 這是為毛
-		//testchange
-		//testchange
-	</script>
+                    }
+                });
+            }
+        }
+
+        function mutipleRoute(originArray, destArray) {
+            var service = new google.maps.DistanceMatrixService;
+            /*var map = currentmap;
+            var markersArray = [];
+            var bounds = new google.maps.LatLngBounds;
+            var geocoder = currentgeocoder;
+            var destinationIcon = 'https://chart.googleapis.com/chart?' +
+            	'chst=d_map_pin_letter&chld=D|FF0000|000000';
+            var originIcon = 'https://chart.googleapis.com/chart?' +
+            	'chst=d_map_pin_letter&chld=O|FFFF00|000000';*/
+            var request = {
+                origins: originArray,
+                destinations: destArray,
+                travelMode: 'DRIVING',
+                unitSystem: google.maps.UnitSystem.METRIC,
+                avoidHighways: false,
+                avoidTolls: false
+            }; //租屋點連向各工作點的方法
+
+            service.getDistanceMatrix(request, function(response, status) {
+                if (status !== 'OK') {
+                    alert('Error was: ' + status);
+                } else {
+                    //alert("in gegtDistanceMatrix else part");
+                    var originList = response.originAddresses;
+                    var destinationList = response.destinationAddresses;
+                    //alert("originlist = " + originList);
+                    var outputDiv = document.getElementById('output');
+                    outputDiv.innerHTML = '';
+                    //deleteMarkers(markersArray);
+                    /*var showGeocodedAddressOnMap = function (asDestination) {
+                    	var icon = asDestination ? destinationIcon : originIcon;
+                    	//asDestination = T 回傳 ?後面前面的值 F的畫就是後面的值
+                    	return function (results, status) {
+                    		if (status === google.maps.GeocoderStatus.OK) {
+                    			map.fitBounds(bounds.extend(results[0].geometry.location));
+                    			markersArray.push(new google.maps.Marker({
+                    				map: map,
+                    				position: results[0].geometry.location,
+                    				icon: icon
+                    			}));
+                    		} else {
+                    			alert('Geocode was not successful due to: ' + status);
+                    		}
+                    	};
+                    };*/
+                    for (var i = 0; i < originList.length; i++) {
+                        var results = response.rows[i].elements;
+
+                        /*geocoder.geocode({ 'address': originList[i] },
+                        	showGeocodedAddressOnMap(false));*/
+                        if (i == 0) {
+                            for (var j = 0; j < results.length; j++) {
+                                /*geocoder.geocode({ 'address': destinationList[j] },
+                                	showGeocodedAddressOnMap(true));*/
+                                outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
+                                    ': ' + results[j].distance.text + ' in ' +
+                                    results[j].duration.text + '<br>' + '<br>';
+                                /*alert("originlist[i] = " + originList[i]);
+                                alert("destinationList[j] = " + destinationList[j]);
+                                alert("results[j].distance.text = " + results[j].distance.text);
+                                alert("results[j].duration.text = " + results[j].duration.text);*/
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+        function deleteMarkers(markersArray) {
+            for (var i = 0; i < markersArray.length; i++) {
+                markersArray[i].setMap(null);
+            }
+            markersArray = [];
+        }
+
+        function calcRoute(st1, st2, en1, en2) {
+            var request = {
+                origin: {
+                    lat: st1,
+                    lng: st2
+                },
+                destination: {
+                    lat: en1,
+                    lng: en2
+                },
+                travelMode: 'DRIVING'
+            };
+            directionsService.route(request, function(response, status) {
+                if (status == 'OK') {
+                    console.log(response.routes[0].legs[0].steps);
+                    directionsDisplay.setDirections(response);
+                } else {
+                    console.log(status);
+                }
+            });
+        }
+
+        function setPath(map) {
+            directionsService = new google.maps.DirectionsService();
+            //規畫路徑呈現選項
+            var rendererOptions = {
+                suppressMarkers: true,
+            };
+            directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+            directionsDisplay.setMap(map);
+            //資料放到地圖上
+        }
+
+
+        google.maps.event.addDomListener(
+            window, 'load', initialize);
+
+        //目前問題1.可以顯示兩點導航 無法到多點? 4/26  2.有路線沒有時間 這是為毛
+        //testchange
+        //testchange
+    </script>
 
 </body>
 
