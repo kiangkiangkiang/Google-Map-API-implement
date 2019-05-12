@@ -23,7 +23,7 @@ body {
     left: 15%;
     top: 15%;
     width: 175px;
-    height: 175px;
+    height: 200px;
     transform: rotate(-3deg);
     background: -webkit-gradient(linear, 0% 20%, 0% 92%, from(#f3f3f3), to(#fff), color-stop(.1, #f3f3f3));
     border-top: 1px solid #ccc;
@@ -56,6 +56,31 @@ body {
     display: inline-block;
     -webkit-box-shadow: 20px 20px 8px rgba(0, 0, 0, 0.2);
     -webkit-transform: rotate(0deg) translate(-45px, -20px) skew(20deg);
+}
+
+#price_des {
+    position: absolute;
+    left: 16%;
+    top: 41.5%;
+}
+
+#traffic_des {
+    position: absolute;
+    right: 44%;
+    top: 44%;
+}
+
+#workplace_des {
+    position: absolute;
+    right: 18%;
+    top: 42%;
+}
+
+.describe {
+    font-family: cursive;
+    font-size: 20px;
+    font-weight: bold;
+    display: none;
 }
 
 #work_place {
@@ -100,4 +125,22 @@ body {
     width: 200px;
     height: 250px;
     transform: rotate(5deg)
+}
+
+#price_title,
+#workspace_title,
+#traffic_title {
+    position: absolute;
+    left: 3px;
+    top: 0%;
+    font-size: 18px;
+    color: rgb(6, 8, 136);
+    font-weight: normal;
+    display: block;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#workspace_title {
+    font-size: 16px;
+    left: 58%;
 }
