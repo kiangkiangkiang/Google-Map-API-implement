@@ -182,20 +182,39 @@
                 });
 
             });
+            //var point_a = new google.maps.Point();
 
+            var test_geo;
+            var a = _geocoder("總統府");
+            var b = _geocoder("台北車站");
+            //alert(point_a);
+            var tempar = [];
 
             function _geocoder(address) {
                 geocoder.geocode({
                     address: address
                 }, function(results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
-                        LatLng = results[0].geometry.location;
-                        //alert(status);
-                        return results;
-
+                        var LatLng = results[0].geometry.location;
+                        var n1 = new google.maps.Marker({
+                            position: results[0].geometry.location,
+                            map: map
+                        });
+                        tempar.push(n1);
+                        //point_a = results[0].geometry.location;
+                        //alert(LatLng);
+                        //test_geo = LatLng;
+                        //alert(test_geo)
+                        //return result;
+                        alert("aaaaaaaaaaaaaaa");
+                        marker_house.forEach(function(e, i) {
+                            alert(e.position.lat);
+                        });
                     }
                 });
             }
+
+            alert(test_geo);
         }
 
         function mutipleRoute(originArray, destArray) {
