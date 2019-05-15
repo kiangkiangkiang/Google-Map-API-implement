@@ -189,6 +189,9 @@
             var b = _geocoder("台北車站");
             //alert(point_a);
             var tempar = [];
+            var xhr = new XMLHttpRequest();
+            var a = 0;
+            var b = 2;
 
             function _geocoder(address) {
                 geocoder.geocode({
@@ -206,10 +209,14 @@
                         //test_geo = LatLng;
                         //alert(test_geo)
                         //return result;
-                        alert("aaaaaaaaaaaaaaa");
-                        tempar.forEach(function(e, i) {
-                            alert(e.position.lat());
-                        });
+                        a++;
+                        if (a == b) {
+                            alert("aaaaaaaaaaaaaaa");
+                            tempar.forEach(function(e, i) {
+                                alert(e.position.lat());
+                            });
+                        }
+
                     }
                 });
             }
