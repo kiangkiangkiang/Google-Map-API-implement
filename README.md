@@ -20,3 +20,5 @@ MYSQL和PHP 連結google map : https://developers.google.com/maps/documentation/
 placeAPI找尋附近店家等等各式功能與收費表:https://developers.google.com/places/web-service/usage-and-billing
 
 marker的各種參數(圖片):https://www.oxxostudio.tw/articles/201801/google-maps-6-marker-image.html
+
+marker動態 :https://www.oxxostudio.tw/articles/201801/google-maps-3-marker.html
