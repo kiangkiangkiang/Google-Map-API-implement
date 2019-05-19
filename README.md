@@ -24,3 +24,5 @@ marker的各種參數(圖片):https://www.oxxostudio.tw/articles/201801/google-m
 marker動態 :https://www.oxxostudio.tw/articles/201801/google-maps-3-marker.html
 
 infowindows : https://www.oxxostudio.tw/articles/201802/google-maps-8-infowindow.html
+
+兩點距離 : https://ballaediworkshop.blogspot.com/2017/09/google-maps-javascript-api-library-web.html
