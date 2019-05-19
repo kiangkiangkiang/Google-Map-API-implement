@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            height: 70%;
+            width: 100%;
+        }
+        
+        .areas {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM&callback=init">
+    </script>
+    <script>
+        var houseIcon = "https://fscomps.fotosearch.com/compc/CSP/CSP141/%E5%A1%91%E6%96%99-%E6%88%BF%E5%AD%90-icon-%E5%89%AA-path-%E5%9C%96%E8%A7%A3%E6%88%96%E5%90%91%E9%87%8F%E5%9C%96__k1414084.jpg";
+        var workIcon = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR42OMZNBvAJDBKbQf-W3gkUzn0V6vMGuQfhP3SPHoE0VjwyG0Kag";
+        var inputArray = [];
+        var outputArray = [];
+        var totalArea = 0; //default 到時候希望根據使用者新增多少地區再去改
+        var currentAdd = 0;
+        var geocoder = new google.maps.Geocoder();
+        var map;
+        var currentPoint = 0;
+        var timelimit = [];
+        var trafficType = [];
+        //先預設house 之後可能接後端讀資料 此house預設為過濾價錢後的
+        var house = [];
+        var markerHouse = [];
+        var markerFirm = [];
+        var currentInfo = 0;
+        //var distanceMatrix_time;
+        //var distanceMatrix_distance;
+        var distanceMatrix_info = "";
+        var traf = "DRIVING";
+
+        function init() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 25.0339687,
+                    lng: 121.5622835
+                },
+                zoom: 11.5
+            });
+            setPath(map); //為了求距離矩陣
+            setHouse();
+            /*function refreshmap(center) {
+                var map = new google.maps.Map(document.getElementById('map'), center);
+            }*/
+        }
+
+        function setHouse() {
+            house.push({
+                lat: 25.00387049,
+                lng: 121.4552172
+            });
+            house.push({
+                lat: 25.029684,
+                lng: 121.471992
+            });
+            house.push({
+                lat: 25.1721225,
+                lng: 121.4504843
+            });
+            house.push({
+                lat: 25.1721225,
+                lng: 121.4504843
+            });
+            house.push({
+                lat: 25.029684,
+                lng: 121.471992
+            });
+            house.push({
+                lat: 25.029684,
+                lng: 121.471992
+            });
+            house.push({
+                lat: 25.0879011,
+                lng: 121.4564449
+            });
+            house.push({
+                lat: 25.1721225,
+                lng: 121.4504843
+            });
+            house.push({
+                lat: 25.1721225,
+                lng: 121.4504843
+            });
+            house.push({
+                lat: 24.95365443,
+                lng: 121.3506682
+            });
+            house.push({
+                lat: 25.079166,
+                lng: 121.5112207
+            });
+            house.push({
+                lat: 25.11878911,
+                lng: 121.5324865
+            });
+            house.push({
+                lat: 25.11225438,
+                lng: 121.5365985
+            });
+            house.push({
+                lat: 25.08192235,
+                lng: 121.5214988
+            });
+            house.push({
+                lat: 25.08192235,
+                lng: 121.5214988
+            });
+            house.forEach(function(e, i) {
+                house[i] = new google.maps.Marker({
+                    position: e,
+                    map: map,
+                    icon: {
+                        url: houseIcon,
+                        scaledSize: new google.maps.Size(50, 50)
+                    }
+                });
+                //alert(house[i].position.lat());
+
+            });
+
+        }
+
+        function output() {
+            totalArea = currentPoint;
+            for (var i = 1; i <= totalArea; i++) {
+                inputArray.push(document.getElementById("area" + i).value);
+                timelimit.push(document.getElementById("time" + i).value);
+                trafficType.push(document.getElementById("traffic" + i).value);
+                //alert(trafficType[i - 1]);
+            }
+            //alert(totalArea);
+            inputArray.forEach(function(e) {
+                //alert("for inputarray  " + e);
+                _geocoder(e);
+            });
+        }
+
+        function _geocoder(address) {
+            geocoder.geocode({
+                address: address
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    //alert("status = ok");
+                    var LatLng = results[0].geometry.location;
+                    var n1 = new google.maps.Marker({
+                        position: results[0].geometry.location,
+                        map: map,
+                        icon: {
+                            url: workIcon,
+                            scaledSize: new google.maps.Size(50, 50)
+                        }
+                    });
+                    outputArray.push(n1);
+                    currentAdd++;
+                    if (currentAdd == totalArea) {
+                        outputArray.forEach(function(e, i) {
+                            //alert(e.position.lat() + "  " + e.position.lng());
+                        });
+                        setHouseEvent();
+                        calculateCenter(outputArray);
+                    }
+                } else {
+                    alert("fail = " + status);
+                }
+            });
+        }
+
+        function setHouseEvent() {
+            house.forEach(function(e, i) {
+                house[i].addListener('click', function() {
+                    //alert(e.position);
+                    //alert(outputArray.length);
+                    if (outputArray.length != 0) {
+                        var request = preDistanceMatrix(e, outputArray);
+                        //不同工具的多點導航還沒弄出來
+                        mutipleRoute(request[0], request[1]);
+                        setInfoWindow(house[i]);
+                    } else {
+                        alert("no firm");
+                    }
+                });
+            });
+        }
+
+        function preDistanceMatrix(e, dest_locat) {
+            //alert(outputArray.length);
+            var dlist = [];
+            var olist = [];
+            dest_locat.forEach(function(element, u) {
+                dlist[u] = {
+                    lat: element.position.lat(),
+                    lng: element.position.lng()
+                };
+                //alert(dlist[u]);
+                olist[u] = {
+                    lat: e.position.lat(),
+                    lng: e.position.lng()
+                };
+                //alert(element.position + " = " + e.position);
+            })
+            return [olist, dlist];
+        };
+
+        function setInfoWindow(marker) {
+            var info = new google.maps.InfoWindow({
+                content: distanceMatrix_info
+            });
+            if (currentInfo != 0) {
+                currentInfo.close();
+                currentInfo = info;
+            } else {
+                currentInfo = info;
+            }
+            info.open(map, marker);
+        }
+
+
+        function calculateCenter(points) {
+            //假設中心點是25.0875488,121.5229645
+            var r = 2500;
+            var center = {
+                lat: 25.0875488,
+                lng: 121.5229645
+            };
+            points.forEach(function(e, i) {
+                e.addListener('click', function() {
+                    calcRoute(center, e.position);
+                    //alert("133");
+                });
+            });
+            center = new google.maps.Marker({
+                position: center,
+                map: map,
+                label: "中心點"
+            });
+            setCircle(center, r);
+            setHouseInCircle(center, r);
+        }
+
+
+        function setCircle(point, circle_distance) {
+            var circle = new google.maps.Circle({
+                center: point.position,
+                radius: circle_distance,
+                strokeOpacity: 0,
+                fillColor: '#f00',
+                fillOpacity: 0.35,
+                map: map
+            });
+        }
+        //計算距離var temp = google.maps.geometry.spherical.computeDistanceBetween( )
+        function setHouseInCircle(point, r) {
+            house.forEach(function(e, i) {
+                var temp = google.maps.geometry.spherical.computeDistanceBetween(
+                    e.position, point.position
+                )
+                if (temp <= r) {
+                    e.icon.url = "https://comps.canstockphoto.com.tw/%E6%88%BF%E5%AD%90-icon-%E7%9F%A2%E9%87%8F-%E8%97%A5%E6%88%BF-%E6%8F%92%E5%9B%BE_csp16041029.jpg";
+                }
+            });
+            google.maps.event.trigger(map, 'resize'); //refresh map
+            //alert("距離=" + temp);
+            //var request = preDistanceMatrix(point, house);
+            //mutipleRoute(request[0], request[1]);
+        }
+
+        function setPath(map) {
+            directionsService = new google.maps.DirectionsService();
+            //規畫路徑呈現選項
+            var rendererOptions = {
+                suppressMarkers: true,
+            };
+            directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+            directionsDisplay.setMap(map);
+            //資料放到地圖上
+        }
+
+        function calcRoute(start, end) { //導航路線
+            var request = {
+                origin: start,
+                destination: end,
+                travelMode: 'DRIVING'
+            };
+            directionsService.route(request, function(response, status) {
+                if (status == 'OK') {
+                    console.log(response.routes[0].legs[0].steps);
+                    directionsDisplay.setDirections(response);
+                } else {
+                    console.log(status);
+                }
+            });
+        }
+
+
+        function mutipleRoute(originArray, destArray) {
+
+            var service = new google.maps.DistanceMatrixService;
+            var request = {
+                origins: originArray,
+                destinations: destArray,
+                travelMode: 'DRIVING',
+                unitSystem: google.maps.UnitSystem.METRIC,
+                avoidHighways: false,
+                avoidTolls: false
+            };
+            service.getDistanceMatrix(request, function(response, status) {
+                if (status !== 'OK') {
+                    alert('Error was: ' + status);
+                } else {
+                    var originList = response.originAddresses;
+                    var destinationList = response.destinationAddresses;
+                    var outputDiv = document.getElementById('output');
+                    outputDiv.innerHTML = '';
+                    for (var i = 0; i < originList.length; i++) {
+                        var results = response.rows[i].elements;
+                        if (i == 0) {
+                            distanceMatrix_info = "";
+                            for (var j = 0; j < results.length; j++) {
+                                outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
+                                    ': ' + results[j].distance.text + ' in ' +
+                                    results[j].duration.text + '<br>' + '<br>';
+                                var temp = "租屋點 : " + originList[i] + "<br>到工作地點 : " + destinationList[j] + "<br>以 " + traf +
+                                    "<br>時間 : " + results[j].duration.text + "<br>距離 : " + results[j].distance.text + "<br><br>";
+                                distanceMatrix_info += temp;
+
+                            }
+                        }
+                    }
+
+                }
+            });
+        }
+
+
+        function deletebtn() {
+            if (currentPoint == 0) return;
+
+            document.getElementById("area" + currentPoint).style.display = "none";
+            document.getElementById("area_des_" + currentPoint).style.display = "none";
+            document.getElementById("time" + currentPoint).style.display = "none";
+            document.getElementById("time_des_" + currentPoint).style.display = "none";
+            document.getElementById("traffic" + currentPoint).style.display = "none";
+            document.getElementById("traffic_des_" + currentPoint).style.display = "none";
+            currentPoint--;
+
+        }
+
+
+        function addbtn() {
+            if (currentPoint == 5) return;
+            currentPoint++;
+            document.getElementById("area" + currentPoint).style.display = "block";
+            document.getElementById("area_des_" + currentPoint).style.display = "block";
+            document.getElementById("time" + currentPoint).style.display = "block";
+            document.getElementById("time_des_" + currentPoint).style.display = "block";
+            document.getElementById("traffic" + currentPoint).style.display = "block";
+            document.getElementById("traffic_des_" + currentPoint).style.display = "block";
+
+        }
+
+        google.maps.event.addDomListener(
+            window, 'load', init);
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="detail" style="width:100%;">
+        <form>
+            <fieldset id="fieldset">
+                <legend>Analysis:</legend>
+                <button type="button" id="add" onclick="addbtn()">新增一點</button>
+                <button type="button" id="delet" onclick="deletebtn()">刪除一點</button>
+                <div id="area_des_1" class="areas">地址1</div>
+                <input type="text" name="area1" id="area1" class="areas">
+                <div id="time_des_1" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time1" class="areas">
+                <div id="traffic_des_1" class="areas">交通工具1</div>
+                <select id="traffic1" class="areas">
+                        <option value="DRIVING">開車</option>
+                        <option value="BICYCLING">腳踏車</option>
+                        <option value="TRANSIT">大眾運輸</option>
+                        <option value="WALKING">走路</option>
+                </select>
+
+
+                <div id="area_des_2" class="areas">地址2</div>
+                <input type="text" name="area2" id="area2" class="areas">
+                <div id="time_des_2" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time2" class="areas">
+                <div id="traffic_des_2" class="areas">交通工具2</div>
+                <select id="traffic2" class="areas">
+                        <option value="DRIVING">開車</option>
+                        <option value="BICYCLING">腳踏車</option>
+                        <option value="TRANSIT">大眾運輸</option>
+                        <option value="WALKING">走路</option>
+                </select>
+
+
+                <div id="area_des_3" class="areas">地址3</div>
+                <input type="text" name="area3" id="area3" class="areas">
+                <div id="time_des_3" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time3" class="areas">
+                <div id="traffic_des_3" class="areas">交通工具3</div>
+                <select id="traffic3" class="areas">
+                        <option value="DRIVING">開車</option>
+                        <option value="BICYCLING">腳踏車</option>
+                        <option value="TRANSIT">大眾運輸</option>
+                        <option value="WALKING">走路</option>
+                </select>
+
+
+                <div id="area_des_4" class="areas">地址4</div>
+                <input type="text" name="area4" id="area4" class="areas">
+                <div id="time_des_4" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time4" class="areas">
+                <div id="traffic_des_4" class="areas">交通工具4</div>
+                <select id="traffic4" class="areas">
+                        <option value="DRIVING">開車</option>
+                        <option value="BICYCLING">腳踏車</option>
+                        <option value="TRANSIT">大眾運輸</option>
+                        <option value="WALKING">走路</option>
+                </select>
+
+
+                <div id="area_des_5" class="areas">地址5</div>
+                <input type="text" name="area5" id="area5" class="areas">
+                <div id="time_des_5" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time5" class="areas">
+                <div id="traffic_des_5" class="areas">交通工具5</div>
+                <select id="traffic5" class="areas">
+                        <option value="DRIVING">開車</option>
+                        <option value="BICYCLING">腳踏車</option>
+                        <option value="TRANSIT">大眾運輸</option>
+                        <option value="WALKING">走路</option>
+                </select>
+
+                <button type="button" id="submit" onclick="output()">submit</button>
+            </fieldset>
+        </form>
+
+    </div>
+    <div id="output" style="font-size: 24px;">
+
+    </div>
+</body>
+
+</html>
+
+</html>
