@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            height: 70%;
+            width: 100%;
+        }
+        
+        .areas {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM&callback=init">
+    </script>
+    <script>
+        var inputArray = [];
+        var outputArray = [];
+        var totalArea = 0; //default 到時候希望根據使用者新增多少地區再去改
+        var currentAdd = 0;
+        var geocoder = new google.maps.Geocoder();
+        var map;
+        var currentPoint = 0;
+        var timelimit = [];
+        var toolchoose = [];
+        var distance = [];
+        var thecenter;
+        var centerlat=0;
+        var centerlng=0;
+        var totaldistance =0;
+
+        function init() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 25.0339687,
+                    lng: 121.5622835
+                },
+                zoom: 11.5
+            });
+
+            function refreshmap(center) {
+                var map = new google.maps.Map(document.getElementById('map'), center);
+            }
+        }
+
+        function output() {
+            totalArea = currentPoint;
+            for (var i = 1; i <= totalArea; i++) {
+                inputArray.push(document.getElementById("area" + i).value);
+                timelimit.push(document.getElementById("time" + i).value);
+            }
+
+            alert(totalArea);
+            inputArray.forEach(function(e) {
+                //alert("for inputarray  " + e);
+                _geocoder(e);
+            });
+        }
+
+        function _geocoder(address) {
+            geocoder.geocode({
+                address: address
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    alert("status = ok");
+                    var LatLng = results[0].geometry.location;
+                    var n1 = new google.maps.Marker({
+                        position: results[0].geometry.location,
+                        map: map
+                    });
+
+                    outputArray.push(n1);
+                    currentAdd++;
+                    if (currentAdd == totalArea) {
+                        outputArray.forEach(function(e, i) {
+                            alert(e.position.lat() + "  " + e.position.lng());
+                        });
+                        calculateCenter(outputArray);
+                    }
+                } else {
+                    alert("fail = " + status);
+                }
+            });
+        }
+
+        function calculateCenter(points) {
+            for (var i = 1; i <= totalArea; i++) {
+                toolchoose.push(document.getElementById("tool" + i).value);
+                timelimit.push(document.getElementById("time" + i).value);
+            }
+            for (var j = 0; j < totalArea; j++) {
+                if (toolchoose[j]=="drive"){
+                   distance.push(timelimit[j]*40);
+                }
+                else if (toolchoose[j]=="walk"){
+                   distance.push(timelimit[j]*4);
+                }
+                else if (toolchoose[j]=="bus"){
+                   distance.push(timelimit[j]*30);
+                }
+            }
+            
+
+            distance.forEach(function(e){
+                alert(e);   
+                totaldistance = totaldistance+(1/e);
+            });
+            points.forEach(function(e,i){
+                centerlat = centerlat+e.position.lat()*(1/distance[i]);
+                centerlng = centerlng+e.position.lng()*(1/distance[i]);
+            });
+            thecenter={lng:centerlng/totaldistance,lat:centerlat/totaldistance};
+            alert(thecenter.lng+" " + thecenter.lat);
+
+            var aa = new google.maps.Marker({
+                        position: {
+                            lat:thecenter.lat,
+                            lng:thecenter.lng
+                        },
+                        map: map
+                    });
+        }
+
+        function addbtn() {
+            currentPoint++;
+            document.getElementById("area" + currentPoint).style.display = "block";
+            document.getElementById("area_des_" + currentPoint).style.display = "block";
+            document.getElementById("time" + currentPoint).style.display = "block";
+            document.getElementById("time_des_" + currentPoint).style.display = "block";
+            document.getElementById("tool" + currentPoint).style.display = "block";
+            document.getElementById("tool_des_" + currentPoint).style.display = "block";
+        }
+
+        google.maps.event.addDomListener(
+            window, 'load', init);
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="detail" style="width:100%;">
+        <form>
+            <fieldset id="fieldset">
+                <legend>Analysis:</legend>
+                <button type="button" id="add" onclick="addbtn()">新增一點</button>
+                <div id="area_des_1" class="areas">地址1</div>
+                <input type="text" name="area1" id="area1" class="areas">
+                <div id="time_des_1" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time1" class="areas">
+                <div id="tool_des_1" class="areas">使用交通工具</div>
+                <select name="YourLocation" id="tool1" class="areas">
+　               <option value="walk">走路</option>
+　               <option value="bus">搭公車</option>
+　               <option value="drive">開車</option>
+                </select>
+                <div id="area_des_2" class="areas">地址2</div>
+                <input type="text" name="area2" id="area2" class="areas">
+                <div id="time_des_2" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time2" class="areas">
+                <div id="tool_des_2" class="areas">使用交通工具</div>
+                <select name="YourLocation" id="tool2" class="areas">
+　               <option value="walk">走路</option>
+　               <option value="bus">搭公車</option>
+　               <option value="drive">開車</option>
+                </select>
+                <div id="area_des_3" class="areas">地址3</div>
+                <input type="text" name="area3" id="area3" class="areas">
+                <div id="time_des_3" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time3" class="areas">
+                <div id="tool_des_3" class="areas">使用交通工具</div>
+                <select name="YourLocation" id="tool3" class="areas">
+　               <option value="walk">走路</option>
+　               <option value="bus">搭公車</option>
+　               <option value="drive">開車</option>
+                </select>
+                <div id="area_des_4" class="areas">地址4</div>
+                <input type="text" name="area4" id="area4" class="areas">
+                <div id="time_des_4" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time4" class="areas">
+                <div id="tool_des_4" class="areas">使用交通工具</div>
+                <select name="YourLocation" id="tool4" class="areas">
+　               <option value="walk">走路</option>
+　               <option value="bus">搭公車</option>
+　               <option value="drive">開車</option>
+                </select>
+                <div id="area_des_5" class="areas">地址5</div>
+                <input type="text" name="area5" id="area5" class="areas">
+                <div id="time_des_5" class="areas">幾分鐘內到</div>
+                <input type="text" name="time" id="time5" class="areas">
+                <div id="tool_des_5" class="areas">使用交通工具</div>
+                <select name="YourLocation" id="tool5" class="areas">
+　               <option value="walk">走路</option>
+　               <option value="bus">搭公車</option>
+　               <option value="drive">開車</option>
+                </select>
+                <button type="button" id="submit" onclick="output()">submit</button>
+            </fieldset>
+        </form>
+
+    </div>
+    <div id="output" style="font-size: 24px;">
+
+    </div>
+</body>
+
+</html>
