@@ -37,6 +37,7 @@
         var centerlat = new Big(0);
         var centerlng = new Big(0);
         var totaldistance = new Big(0);
+        //var geoArray = [];
 
         function init() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -57,10 +58,14 @@
             for (var i = 1; i <= totalArea; i++) {
                 inputArray.push(document.getElementById("area" + i).value);
                 timelimit.push(document.getElementById("time" + i).value);
+                toolchoose.push(document.getElementById("tool" + i).value);
+                //給outputarray初始
+                outputArray[i - 1] = 0;
             }
 
             alert("total area = " + totalArea);
-            for (i = 0; i < totalArea; i++) {
+            for (var i = 0; i < totalArea; i++) {
+                console.log(inputArray[i] + "  " + timelimit[i] + "  " + toolchoose[i]);
                 _geocoder(inputArray[i]);
             }
         }
@@ -76,14 +81,27 @@
                         position: results[0].geometry.location,
                         map: map
                     });
-                    console.log("n1 1to3 : = " + new Big(n1.position.lat()) + " , " + new Big(n1.position.lng()));
-                    outputArray.push(n1);
+                    console.log(results[0].formatted_address + "  " + address);
+                    //console.log("n1 1to3 : = " + new Big(n1.position.lat()) + " , " + new Big(n1.position.lng()));
+                    ////關鍵程式碼 因為他是先集合所有request再一次發送 所以轉檔順序不一定按照我送的順序
+                    ////解決方法  直接在裡面判斷順序
+                    for (var i = 0; i < totalArea; i++) {
+                        if (address == inputArray[i]) {
+                            outputArray[i] = n1;
+                            console.log("調整後到outputArray的第 " + i + " 個");
+                            break;
+                        }
+                    } //邏輯上是 每次一個新的地址近來 我就先判斷他是屬於哪個input的值 然後再給相同位置(i)的output
+                    ////
+                    //outputArray.push(n1);
+
                     currentAdd++;
                     if (currentAdd == totalArea) {
-                        outputArray.forEach(function(e, i) {
+                        console.log("output長度是 = " + outputArray.length);
+                        /*outputArray.forEach(function(e, i) {
                             //alert(e.position.lat() + "  " + e.position.lng());
 
-                        });
+                        });*/
                         calculateCenter(outputArray);
                     }
                 } else {
@@ -93,10 +111,11 @@
         }
 
         function calculateCenter(points) {
-            for (var i = 1; i <= totalArea; i++) {
-                toolchoose.push(document.getElementById("tool" + i).value);
-                timelimit.push(document.getElementById("time" + i).value);
-            }
+            /*for (var i = 1; i <= totalArea; i++) {
+                
+                //timelimit.push(document.getElementById("time" + i).value);
+            }*/
+            //alert(timelimit.length + "長度");
             for (var j = 0; j < totalArea; j++) {
                 if (toolchoose[j] == "drive") {
                     distance.push(timelimit[j] * 40);
@@ -154,13 +173,16 @@
         }
 
         /*
-        n1 1to3 : = 25.1365247 , 121.50637710000001
-中心點.html:80 n1 1to3 : = 25.036125 , 121.45246799999995
-中心點.html:80 n1 1to3 : = 25.0478142 , 121.51694880000002
-中心點.html:123 第0點的= 25.1365247 , 121.50637710000001
-中心點.html:123 第1點的= 25.036125 , 121.45246799999995
-中心點.html:123 第2點的= 25.0478142 , 121.51694880000002
-中心點.html:142 中心點 : 121.50531447851459 25.132245439257293
+總統府
+中心點.html:61 北投捷運站
+中心點.html:61 新莊捷運站
+中心點.html:81 n1 1to3 : = 25.036125 , 121.45246799999995
+中心點.html:81 n1 1to3 : = 25.1317795 , 121.49864179999997
+中心點.html:81 n1 1to3 : = 25.0400826 , 121.51195469999993
+中心點.html:125 第0點的= 25.036125 , 121.45246799999995
+中心點.html:125 第1點的= 25.1317795 , 121.49864179999997
+中心點.html:125 第2點的= 25.0400826 , 121.51195469999993
+中心點.html:144 中心點 : 121.45818614981697 25.04161501799151
 /////
 n1 1to3 : = 25.1317795 , 121.49864179999997
 中心點.html:80 n1 1to3 : = 25.0886283 , 121.5244037
@@ -169,6 +191,14 @@ n1 1to3 : = 25.1317795 , 121.49864179999997
 中心點.html:123 第1點的= 25.0886283 , 121.5244037
 中心點.html:123 第2點的= 25.032609 , 121.43405430000007
 中心點.html:142 中心點 : 121.51755426414654 25.086040431021043
+/////
+n1 1to3 : = 25.1317795 , 121.49864179999997
+中心點.html:79 n1 1to3 : = 25.0886283 , 121.5244037
+中心點.html:79 n1 1to3 : = 25.167817 , 121.44556
+中心點.html:122 第0點的= 25.1317795 , 121.49864179999997
+中心點.html:122 第1點的= 25.0886283 , 121.5244037
+中心點.html:122 第2點的= 25.167817 , 121.44556
+中心點.html:141 中心點 : 121.49778192173679 25.129656327996802
 */
         function addbtn() {
             currentPoint++;
