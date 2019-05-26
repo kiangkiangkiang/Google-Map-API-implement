@@ -42,6 +42,7 @@
         //var distanceMatrix_distance;
         var distanceMatrix_info = "";
         var traf = "DRIVING";
+        var currentadd_matrix = 0;
 
         function init() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -185,10 +186,24 @@
                     //alert(e.position);
                     //alert(outputArray.length);
                     if (outputArray.length != 0) {
-                        var request = preDistanceMatrix(e, outputArray);
+
+                        //var request = preDistanceMatrix(e, outputArray);
                         //不同工具的多點導航還沒弄出來
-                        mutipleRoute(request[0], request[1]);
-                        setInfoWindow(house[i]);
+                        for (var u = 0; u < totalArea; u++) {
+                            var request = [];
+                            request[0] = [{
+                                lat: house[i].position.lat(),
+                                lng: house[i].position.lng()
+                            }];
+                            request[1] = [{
+                                lat: outputArray[u].position.lat(),
+                                lng: outputArray[u].position.lng()
+                            }];
+                            mutipleRoute(request[0], request[1], trafficType[u], i);
+                            console.log(trafficType[u] + '  ');
+                            console.log(distanceMatrix_info);
+                        }
+
                     } else {
                         alert("no firm");
                     }
@@ -196,7 +211,7 @@
             });
         }
 
-        function preDistanceMatrix(e, dest_locat) {
+        /*function preDistanceMatrix(e, dest_locat) {
             //alert(outputArray.length);
             var dlist = [];
             var olist = [];
@@ -213,7 +228,7 @@
                 //alert(element.position + " = " + e.position);
             })
             return [olist, dlist];
-        };
+        };*/
 
         function setInfoWindow(marker) {
             var info = new google.maps.InfoWindow({
@@ -225,7 +240,8 @@
             } else {
                 currentInfo = info;
             }
-            info.open(map, marker);
+            currentInfo.open(map, marker);
+            distanceMatrix_info = "";
         }
 
 
@@ -306,13 +322,13 @@
         }
 
 
-        function mutipleRoute(originArray, destArray) {
+        function mutipleRoute(originArray, destArray, Tmodel, record) {
 
             var service = new google.maps.DistanceMatrixService;
             var request = {
                 origins: originArray,
                 destinations: destArray,
-                travelMode: 'DRIVING',
+                travelMode: Tmodel,
                 unitSystem: google.maps.UnitSystem.METRIC,
                 avoidHighways: false,
                 avoidTolls: false
@@ -328,16 +344,22 @@
                     for (var i = 0; i < originList.length; i++) {
                         var results = response.rows[i].elements;
                         if (i == 0) {
-                            distanceMatrix_info = "";
                             for (var j = 0; j < results.length; j++) {
+                                //distanceMatrix_info = ""
                                 outputDiv.innerHTML += originList[i] + ' to ' + destinationList[j] +
                                     ': ' + results[j].distance.text + ' in ' +
                                     results[j].duration.text + '<br>' + '<br>';
-                                var temp = "租屋點 : " + originList[i] + "<br>到工作地點 : " + destinationList[j] + "<br>以 " + traf +
-                                    "<br>時間 : " + results[j].duration.text + "<br>距離 : " + results[j].distance.text + "<br><br>";
+                                var temp = "租屋點 : " + originList[i] + "<br>到工作地點 : " + destinationList[j] +
+                                    "<br>時間 : " + results[j].duration.text + "<br>距離 : " + results[j].distance.text + "<br>交通工具:" +
+                                    Tmodel + "<br><br>";
                                 distanceMatrix_info += temp;
-
                             }
+                            currentadd_matrix++;
+                            if (currentadd_matrix == totalArea) {
+                                currentadd_matrix = 0;
+                                setInfoWindow(house[record]);
+                            }
+                            break;
                         }
                     }
 
@@ -392,7 +414,7 @@
                 <div id="traffic_des_1" class="areas">交通工具1</div>
                 <select id="traffic1" class="areas">
                         <option value="DRIVING">開車</option>
-                        <option value="BICYCLING">腳踏車</option>
+                        <!--<option value="BICYCLING">腳踏車</option>-->
                         <option value="TRANSIT">大眾運輸</option>
                         <option value="WALKING">走路</option>
                 </select>
@@ -405,7 +427,7 @@
                 <div id="traffic_des_2" class="areas">交通工具2</div>
                 <select id="traffic2" class="areas">
                         <option value="DRIVING">開車</option>
-                        <option value="BICYCLING">腳踏車</option>
+                        <!--<option value="BICYCLING">腳踏車</option>-->
                         <option value="TRANSIT">大眾運輸</option>
                         <option value="WALKING">走路</option>
                 </select>
@@ -418,7 +440,7 @@
                 <div id="traffic_des_3" class="areas">交通工具3</div>
                 <select id="traffic3" class="areas">
                         <option value="DRIVING">開車</option>
-                        <option value="BICYCLING">腳踏車</option>
+                        <!----<option value="BICYCLING">腳踏車</option>-->
                         <option value="TRANSIT">大眾運輸</option>
                         <option value="WALKING">走路</option>
                 </select>
@@ -431,7 +453,7 @@
                 <div id="traffic_des_4" class="areas">交通工具4</div>
                 <select id="traffic4" class="areas">
                         <option value="DRIVING">開車</option>
-                        <option value="BICYCLING">腳踏車</option>
+                        <!--<option value="BICYCLING">腳踏車</option>-->
                         <option value="TRANSIT">大眾運輸</option>
                         <option value="WALKING">走路</option>
                 </select>
@@ -444,7 +466,7 @@
                 <div id="traffic_des_5" class="areas">交通工具5</div>
                 <select id="traffic5" class="areas">
                         <option value="DRIVING">開車</option>
-                        <option value="BICYCLING">腳踏車</option>
+                        <!---<option value="BICYCLING">腳踏車</option>-->
                         <option value="TRANSIT">大眾運輸</option>
                         <option value="WALKING">走路</option>
                 </select>
