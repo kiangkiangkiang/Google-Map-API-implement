@@ -114,7 +114,6 @@
                 title: '花鐘'
             }];
 
-
             info_house.forEach(function(e, i) {
                 infowindows_myhouse[i] = new google.maps.InfoWindow({
                     content: e
@@ -173,7 +172,9 @@
                                 lat: e.position.lat,
                                 lng: e.position.lng
                             };
+                            alert("this test " + element.position.lat);
                         })
+
                         return [olist, dlist];
                     };
                     //設置一個array
