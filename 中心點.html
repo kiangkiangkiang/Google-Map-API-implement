@@ -21,6 +21,7 @@
     </style>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHGqypVNpShrz4KuSYt10WErquMn-FaSM&callback=init">
     </script>
+    <script src="big.js-master\big.js"></script>
     <script>
         var inputArray = [];
         var outputArray = [];
@@ -33,9 +34,9 @@
         var toolchoose = [];
         var distance = [];
         var thecenter;
-        var centerlat=0;
-        var centerlng=0;
-        var totaldistance =0;
+        var centerlat = new Big(0);
+        var centerlng = new Big(0);
+        var totaldistance = new Big(0);
 
         function init() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -58,11 +59,10 @@
                 timelimit.push(document.getElementById("time" + i).value);
             }
 
-            alert(totalArea);
-            inputArray.forEach(function(e) {
-                //alert("for inputarray  " + e);
-                _geocoder(e);
-            });
+            alert("total area = " + totalArea);
+            for (i = 0; i < totalArea; i++) {
+                _geocoder(inputArray[i]);
+            }
         }
 
         function _geocoder(address) {
@@ -70,18 +70,19 @@
                 address: address
             }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
-                    alert("status = ok");
+                    //alert("status = ok");
                     var LatLng = results[0].geometry.location;
                     var n1 = new google.maps.Marker({
                         position: results[0].geometry.location,
                         map: map
                     });
-
+                    console.log("n1 1to3 : = " + new Big(n1.position.lat()) + " , " + new Big(n1.position.lng()));
                     outputArray.push(n1);
                     currentAdd++;
                     if (currentAdd == totalArea) {
                         outputArray.forEach(function(e, i) {
-                            alert(e.position.lat() + "  " + e.position.lng());
+                            //alert(e.position.lat() + "  " + e.position.lng());
+
                         });
                         calculateCenter(outputArray);
                     }
@@ -97,38 +98,78 @@
                 timelimit.push(document.getElementById("time" + i).value);
             }
             for (var j = 0; j < totalArea; j++) {
-                if (toolchoose[j]=="drive"){
-                   distance.push(timelimit[j]*40);
-                }
-                else if (toolchoose[j]=="walk"){
-                   distance.push(timelimit[j]*4);
-                }
-                else if (toolchoose[j]=="bus"){
-                   distance.push(timelimit[j]*30);
+                if (toolchoose[j] == "drive") {
+                    distance.push(timelimit[j] * 40);
+                } else if (toolchoose[j] == "walk") {
+                    distance.push(timelimit[j] * 4);
+                } else if (toolchoose[j] == "bus") {
+                    distance.push(timelimit[j] * 30);
                 }
             }
-            
 
-            distance.forEach(function(e){
-                alert(e);   
-                totaldistance = totaldistance+(1/e);
-            });
-            points.forEach(function(e,i){
-                centerlat = centerlat+e.position.lat()*(1/distance[i]);
-                centerlng = centerlng+e.position.lng()*(1/distance[i]);
-            });
-            thecenter={lng:centerlng/totaldistance,lat:centerlat/totaldistance};
-            alert(thecenter.lng+" " + thecenter.lat);
 
+            distance.forEach(function(e) {
+                var one = new Big(1);
+                var d = new Big(e);
+                totaldistance = totaldistance.add(one.div(e));
+                alert("distance foreach : " + totaldistance);
+                //totaldistance = totaldistance + (1 / e);
+            });
+            points.forEach(function(e, i) {
+                var one = new Big(1);
+                var d = new Big(distance[i]);
+                var NewELat = new Big(e.position.lat());
+                console.log("第" + i + "點的= " + new Big(e.position.lat()) + " , " + new Big(e.position.lng()));
+                //alert(NewELat + "= newelat");
+                var NewELng = new Big(e.position.lng());
+                centerlat = centerlat.add(NewELat.mul(one.div(d)));
+                centerlng = centerlng.add(NewELng.mul(one.div(d)));
+                // alert(NewELat.mul(one.div(d)) + "  =mul(1/d)");
+                alert(centerlng + " = centerlng");
+                //centerlat = centerlat + e.position.lat() * (1 / distance[i]);
+                //centerlng = centerlng + e.position.lng() * (1 / distance[i]);
+            });
+            thecenter = {
+                    lng: Number(centerlng.div(totaldistance)),
+                    lat: Number(centerlat.div(totaldistance))
+                }
+                /*thecenter = {
+                    lng: centerlng / totaldistance,
+                    lat: centerlat / totaldistance
+                };*/
+            alert("中心點 : " + thecenter.lng + " " + thecenter.lat);
+            console.log("中心點 : " + thecenter.lng + " " + thecenter.lat);
+            console.log("error = " + "121.50531447851459 25.132245439257293");
+            //121.49800392812497 25.127441821875003
+            //121.45616529687497 25.040955584375
+            // yes = 121.51966058466553 25.094694557422507
+            //121.45870077292001 25.04490216655791
             var aa = new google.maps.Marker({
-                        position: {
-                            lat:thecenter.lat,
-                            lng:thecenter.lng
-                        },
-                        map: map
-                    });
+                position: {
+                    lat: thecenter.lat,
+                    lng: thecenter.lng
+                },
+                map: map
+            });
         }
 
+        /*
+        n1 1to3 : = 25.1365247 , 121.50637710000001
+中心點.html:80 n1 1to3 : = 25.036125 , 121.45246799999995
+中心點.html:80 n1 1to3 : = 25.0478142 , 121.51694880000002
+中心點.html:123 第0點的= 25.1365247 , 121.50637710000001
+中心點.html:123 第1點的= 25.036125 , 121.45246799999995
+中心點.html:123 第2點的= 25.0478142 , 121.51694880000002
+中心點.html:142 中心點 : 121.50531447851459 25.132245439257293
+/////
+n1 1to3 : = 25.1317795 , 121.49864179999997
+中心點.html:80 n1 1to3 : = 25.0886283 , 121.5244037
+中心點.html:80 n1 1to3 : = 25.032609 , 121.43405430000007
+中心點.html:123 第0點的= 25.1317795 , 121.49864179999997
+中心點.html:123 第1點的= 25.0886283 , 121.5244037
+中心點.html:123 第2點的= 25.032609 , 121.43405430000007
+中心點.html:142 中心點 : 121.51755426414654 25.086040431021043
+*/
         function addbtn() {
             currentPoint++;
             document.getElementById("area" + currentPoint).style.display = "block";
