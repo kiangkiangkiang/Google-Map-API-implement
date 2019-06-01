@@ -28,4 +28,7 @@ infowindows : https://www.oxxostudio.tw/articles/201802/google-maps-8-infowindow
 兩點距離 : https://ballaediworkshop.blogspot.com/2017/09/google-maps-javascript-api-library-web.html
 
 ***圖表製作***
+
+官方網站:https://www.chartjs.org/samples/latest/
 參數設定:https://www.twblogs.net/a/5b8246ca2b71772b882feca5
+一些例子 :https://codepen.io/marshyon/pen/JKJWKY
