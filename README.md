@@ -26,3 +26,6 @@ marker動態 :https://www.oxxostudio.tw/articles/201801/google-maps-3-marker.htm
 infowindows : https://www.oxxostudio.tw/articles/201802/google-maps-8-infowindow.html
 
 兩點距離 : https://ballaediworkshop.blogspot.com/2017/09/google-maps-javascript-api-library-web.html
+
+***圖表製作***
+參數設定:https://www.twblogs.net/a/5b8246ca2b71772b882feca5
