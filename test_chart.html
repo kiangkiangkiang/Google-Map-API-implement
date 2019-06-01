@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .test {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script>
+        var istest = false;
+        var allValue = []; //所有資料
+        var allValueName = []; //為了顯示label而取得每個資料的名字
+
+        function test_on() {
+            document.getElementById("test1").style.display = "block";
+            document.getElementById("test2").style.display = "block";
+            istest = true;
+        }
+
+        function getValue() {
+            allValue.push(document.getElementById("inner").value);
+            allValue.push(document.getElementById("outer").value);
+            allValue.push(document.getElementById("image").value);
+            allValueName.push("inner");
+            allValueName.push("outer");
+            allValueName.push("image");
+            if (istest) {
+                allValue.push(document.getElementById("test1").value);
+                allValue.push(document.getElementById("test2").value);
+                allValueName.push("test1");
+                allValueName.push("test2");
+            }
+        }
+
+        function makeChart() {
+            getValue();
+            BarChart();
+            RadarChart();
+        }
+
+        function BarChart() {
+            for (var i = 0; i < allValue.length; i++)
+                console.log(allValue[i]);
+            var ctx_bar = document.getElementById('chart').getContext('2d');
+            var chart = new Chart(ctx_bar, {
+                type: 'horizontalBar',
+                data: {
+                    labels: allValueName,
+                    datasets: [{
+                        label: '沒特別設定',
+                        data: allValue,
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            categoryPercentage: 0.8, //柱子寬度(類別比例)                            
+                            gridLines: {
+                                offsetGridLines: true
+                            },
+                            ticks: {
+                                beginAtZero: true //從零開始
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                //steps: 10,//每一格刻度間距10
+                                //stepValue: 10,
+                                //max: 10 //設定最大值
+                            },
+                            categoryPercentage: 0.01, //刻度寬度
+                        }],
+                    }
+                }
+            });
+        }
+
+        function RadarChart() {
+            var ctx_Radar = document.getElementById('chart2').getContext('2d');
+            var Radar = new Chart(ctx_Radar, {
+                type: 'radar',
+                data: {
+                    labels: allValueName,
+                    datasets: [{
+                        label: '沒特別設定',
+                        data: allValue,
+                        backgroundColor: "rgba(255, 99, 132, 0.2)",
+                        pointRadius: 1, //點的半徑
+                        pointBackgroundColor: "red", //點的顏色
+                    }]
+                },
+                options: {
+                    scale: {
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 30,
+                            stepSize: 5
+                        }
+                    }
+                }
+
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="input" style="width:100;height:40%">
+
+        內部: <input type="text" id="inner"><br> 外部: <input type="text" id="outer"><br> 圖片: <input type="text" id="image"><br> 測試1: <input type="text" id="test1" class="test"><br> 測試2: <input type="text" id="test2" class="test"><br>
+        <input type="submit" value="Submit" onclick=" makeChart()">
+        <input type="submit" value="Add_test" id="addtest" onclick="test_on()">
+
+    </div>
+    <div id="output_bar" style="width:50%">
+        <canvas id="chart">
+                
+        </canvas>
+    </div>
+    <div id="output_start" style="width:50%">
+        <canvas id="chart2">
+                    
+            </canvas>
+    </div>
+    <div id="output_other" style="position:absolute;width:50%">
+        <canvas id="chart3">
+                        
+                </canvas>
+    </div>
+</body>
+
+</html>
