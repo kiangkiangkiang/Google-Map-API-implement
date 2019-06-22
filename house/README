@@ -1,0 +1,21 @@
+因為檔案有問題 所以
+請依照以下步驟完成
+1. 到 https://templated.co/fullmotion 下載模板
+2. 將github裡面的檔案"index.html"下載 取代原本模板的index.html
+3. 將github裡面的資料夾myJSCSS下載 丟到模板的資料夾內
+4. 在模板的資料夾內新建一個檔案 檔名是"houseImage"
+5. 將所有圖片(3006張)丟到houseImage裡面
+完成以上五步即可開始操作
+
+請注意
+1.變數 currentImage 是當前顯示的房子
+2.網頁最下面的send按鈕是可以隨機產生圖片以及圖表
+3.除了send跟六張圖片敘述等等還有choose按鈕外 其他我幾乎沒改
+4.以Data命名的變數幾乎都跟圖表的參數有關
+5.ps是指price跟size
+
+我想到的你可以做
+1.按send後會先產生6個圖片存在currentImage 你可以試試看利用這6個圖片找到資料集內相對應房子的price跟size還有title
+  其中請注意 圖片跟excel的對應關係 *應該*就是例如圖片h1會對應到excel的第一個row的資料
+
+2.你可以把資料讀進js後 用好懂的方式存 然後跟我說你是怎麼存資料 變數名字是甚麼等等 這樣我就算不用連資料庫我們也可以同步進行
