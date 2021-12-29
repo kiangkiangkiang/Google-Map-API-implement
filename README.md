@@ -1,5 +1,5 @@
-# test_map
-# 資料來源 : 
+# Google Map API implement - Extend google map api and implement statistical chart to HTML
+## 資料來源 : 
 GOOGLE : https://developers.google.com/maps/documentation/directions/intro?hl=zh-tw#required-parameters
 
 (中)起手式 : https://www.oxxostudio.tw/articles/201810/google-maps-19-directions.html
